@@ -1,4 +1,4 @@
-Class HIP.Service.PatientService Extends Ens.BusinessService
+Class HIP.BusinessService.RESTHandlerService Extends Ens.BusinessService
 {
 
 Parameter ADAPTER = "Ens.InboundAdapter";

@@ -1,11 +1,15 @@
 Class HIP.Message.HIPRESTResponse Extends Ens.Response
 {
 
-Property code As %String;
+Property Code As %String(MAXLEN = 8);
 
-Property event As %String;
+Property Event As %String(MAXLEN = 16);
 
-Property message As %String(MAXLEN = 1024);
+Property Type As %String;
+
+Property Message As %String(MAXLEN = 4096);
+
+Property Payload As %String(MAXLEN = 1048576);
 
 Storage Default
 {
@@ -19,6 +23,21 @@ Storage Default
 </Value>
 <Value name="3">
 <Value>message</Value>
+</Value>
+<Value name="4">
+<Value>Payload</Value>
+</Value>
+<Value name="5">
+<Value>Code</Value>
+</Value>
+<Value name="6">
+<Value>Event</Value>
+</Value>
+<Value name="7">
+<Value>Type</Value>
+</Value>
+<Value name="8">
+<Value>Message</Value>
 </Value>
 </Data>
 <DefaultData>HIPRESTResponseDefaultData</DefaultData>
