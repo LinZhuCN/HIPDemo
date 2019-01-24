@@ -18,10 +18,10 @@ Method OnRequest(pRequest As HIP.Message.HIPRESTRequest, Output pResponse As HIP
 	//Invoke handlers to perform
 	set tSC = $CASE(pRequest.Operation,
 		"Create":..OnCreate(patInstance,.pResponse),
-		"Delete":..OnDelete(pRequest,pResponse),
-		"Update":..OnUpdate(patInstance,pResponse),
-		"Search":..OnSearch(pRequest,pResponse),
-		"Get":..OnGet(pRequest,pResponse)) 
+		"Delete":..OnDelete(pRequest,.pResponse),
+		"Update":..OnUpdate(patInstance,.pResponse),
+		"Search":..OnSearch(pRequest,.pResponse),
+		"Read":..OnRead(pRequest,.pResponse)) 
 	Quit tSC
 }
 
@@ -44,7 +44,7 @@ Method OnSearch(pRequest As HIP.Message.HIPRESTRequest, ByRef pResponse As HIP.M
 	quit ##super(.pRequest,.pResponse)
 }
 
-Method OnGet(pRequest As HIP.Message.HIPRESTRequest, ByRef pResponse As HIP.Message.HIPRESTResponse) As %Status{
+Method OnRead(pRequest As HIP.Message.HIPRESTRequest, ByRef pResponse As HIP.Message.HIPRESTResponse) As %Status{
 	quit ##super(.pRequest,.pResponse)
 }*/
 

@@ -9,7 +9,7 @@ Parameter SETTINGS = "TargetConfigName:Connection:selector?context={Ens.ContextS
 Property TargetConfigName As %String;
 
 Method OnProcessInput(pInput As HIP.Message.HIPRESTRequest, Output pOutput As HIP.Message.HIPRESTResponse) As %Status
-{
+{	
 	do ..SendRequestSync(..TargetConfigName,pInput,.pOutput)
 	Quit $$$OK
 }

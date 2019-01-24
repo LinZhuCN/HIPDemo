@@ -9,7 +9,7 @@ Property Type As %String;
 
 Property Message As %String(MAXLEN = 4096);
 
-Property Payload As %String(MAXLEN = 1048576);
+Property Payload As %Stream.GlobalCharacter;
 
 Storage Default
 {

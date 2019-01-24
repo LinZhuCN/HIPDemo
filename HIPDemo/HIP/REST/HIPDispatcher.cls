@@ -73,6 +73,7 @@ ClassMethod processRequest(pInteraction As %String, pType As %String = "", pId A
 			Quit:$$$ISERR(tStatus)
 		} 
 		
+		
 		// Process the response back to the calling REST client
 		Set tStatus = ..marshallResponse(tResponse)
 		Quit:$$$ISERR(tStatus)
@@ -137,9 +138,8 @@ ClassMethod marshallRequest(pInteraction As %String, pType As %String, pId As %S
 		// Copy the HTTP body (if any)
 		If $IsObject(%request.Content) {
 		// Copy the incoming payload
-				Set pRequest.Payload = %request.Content.Read()
+			Set tStatus = pRequest.Payload.CopyFrom(%request.Content)
 		}
-
 	} Catch (tUnexpected) {
 		Set tStatus = tUnexpected.AsStatus()
 	}
@@ -165,7 +165,7 @@ ClassMethod delegateRequest(pServiceName As %String, pServiceClass As %String, p
 		//
 		//       However, there are some validation and processing errors in the business service that we
 		//       can attempt to map to a HTTP status (e.g. Bad Requests).
-
+		
 		#dim tHttpStatus As %String = ""
 		
 		Set tStatus = ##class(HIP.Core.Utils).StatusToHttp(tStatus2,.tHttpStatus)
@@ -213,12 +213,12 @@ ClassMethod marshallResponse(pResponse As HIP.Message.HIPRESTResponse, pDefaultS
 		Set %response.CharSet = "UTF-8"
 		
 		//zw pResponse
-		set tStream = ""		
-		d ##class(%ZEN.Auxiliary.jsonProvider).%WriteJSONStreamFromObject(.tStream,pResponse,,,1,"sbn")
-		set rtnStr = tStream.Read()
+		Set tStream = ""		
+		Do ##class(%ZEN.Auxiliary.jsonProvider).%WriteJSONStreamFromObject(.tStream,pResponse,,,1,"sbn")
+		Set rtnStr = tStream.Read()
 		
 		//set rtnStr = $ZSTRIP(rtnStr,"*","\")
-		w rtnStr
+		W rtnStr
 		//w tStream.Read()
 		
 		
