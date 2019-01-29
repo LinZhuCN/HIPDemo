@@ -11,6 +11,8 @@ Parameter XMLTYPE = "HIP.DataModel.Encounter";
 /// The patient ro group present at the encounter.
 Property Subject As HIP.DataModel.Patient(XMLNAME = "subject", XMLPROJECTION = "ELEMENT") [required];
 
+
+
 Storage Default
 {
 <Data name="EncounterDefaultData">
@@ -18,10 +20,10 @@ Storage Default
 <Value>%%CLASSNAME</Value>
 </Value>
 <Value name="2">
-<Value>ResourceId</Value>
+<Value>Identifier</Value>
 </Value>
 <Value name="3">
-<Value>Identifier</Value>
+<Value>Subject</Value>
 </Value>
 <Value name="4">
 <Value>Class</Value>
@@ -33,39 +35,36 @@ Storage Default
 <Value>Priority</Value>
 </Value>
 <Value name="7">
-<Value>Subject</Value>
-</Value>
-<Value name="8">
 <Value>IncomingReferral</Value>
 </Value>
-<Value name="9">
+<Value name="8">
 <Value>Participant</Value>
 </Value>
-<Value name="10">
+<Value name="9">
 <Value>Period</Value>
 </Value>
-<Value name="11">
+<Value name="10">
 <Value>Length</Value>
 </Value>
-<Value name="12">
+<Value name="11">
 <Value>Reason</Value>
 </Value>
-<Value name="13">
+<Value name="12">
 <Value>Hospitalization</Value>
 </Value>
-<Value name="14">
+<Value name="13">
 <Value>Location</Value>
 </Value>
-<Value name="15">
+<Value name="14">
 <Value>Extension</Value>
 </Value>
-<Value name="16">
+<Value name="15">
 <Value>ServiceRequests</Value>
 </Value>
-<Value name="17">
+<Value name="16">
 <Value>Observations</Value>
 </Value>
-<Value name="18">
+<Value name="17">
 <Value>Diagnoses</Value>
 </Value>
 </Data>
