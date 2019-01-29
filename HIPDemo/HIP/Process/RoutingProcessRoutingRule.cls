@@ -11,7 +11,11 @@ XData RuleDefinition [ XMLNamespace = "http://www.intersystems.com/rule" ]
 <rule name="HIPRESTRequest资源路由规则">
 <constraint name="msgClass" value="HIP.Message.HIPRESTRequest"></constraint>
 <when condition="Document.Type=&quot;Patient&quot;">
-<send transform="" target="HIP.Process.Resources.PatientProcess"></send>
+<send transform="" target="HIP.Process.ResourceBPL.PatientBPL"></send>
+<return></return>
+</when>
+<when condition="Document.Type=&quot;Encounter&quot;">
+<send transform="" target="HIP.Process.ResourceBPL.EncounterBPL"></send>
 <return></return>
 </when>
 </rule>

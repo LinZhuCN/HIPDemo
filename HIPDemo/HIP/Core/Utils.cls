@@ -18,19 +18,26 @@ Parameter HTTPACCEPT As %String = "Accept";
 
 Parameter HTTPCONTENTLOCATION As %String = "Content-Location";
 
-Parameter HTTP200OK As %String = "200 OK";
+///HTTP200OK
+Parameter OK As %String = "200";
 
-Parameter HTTP400BADREQUEST As %String = "400 Bad Request";
+///HTTP400BADREQUEST
+Parameter BADREQUEST As %String = "400";
 
-Parameter HTTP404NOTFOUND As %String = "404 Not Found";
+///HTTP404NOTFOUND
+Parameter NOTFOUND As %String = "404";
 
-Parameter HTTP406NOTACCEPTABLE As %String = "406 Not Acceptable";
+///HTTP406NOTACCEPTABLE
+Parameter NOTACCEPTABLE As %String = "406";
 
-Parameter HTTP500INTERNALSERVERERROR As %String = "500 Internal Server Error";
+///HTTP500INTERNALSERVERERROR
+Parameter INTERNALSERVERERROR As %String = "500";
 
-Parameter HTTP502BADGATEWAY As %String = "502 Bad Gateway";
+///HTTP502BADGATEWAY
+Parameter BADGATEWAY As %String = "502";
 
-Parameter HTTP503SERVICEUNAVAILABLE As %String = "503 Service Unavailable";
+///HTTP503SERVICEUNAVAILABLE
+Parameter SERVICEUNAVAILABLE As %String = "503";
 
 /// 
 /// Convert common %Status values into HTTP status codes.  Note: this is not exhaustive
@@ -52,14 +59,14 @@ ClassMethod StatusToHttp(pStatus As %Status, ByRef pHttpStatus As %String = "") 
 			
 			// Try to match the %Status code
 			Set tMatch = $CASE(tCode,
-					$$$LoadObjectNotFound:						..#HTTP404NOTFOUND,
-					$$$HSFHIRErrEntityNotFound:					..#HTTP404NOTFOUND,
-					$$$HSFHIRErrUrlNotMatchedToInteraction:		..#HTTP404NOTFOUND,
-					$$$HSFHIRErrPayloadMissing:					..#HTTP400BADREQUEST,
-					$$$HSFHIRErrPayloadUnexpected:				..#HTTP400BADREQUEST,
-					$$$HSFHIRErrContentTypeNotSupported:		..#HTTP406NOTACCEPTABLE,
-					$$$EnsErrProductionNotRunning:				..#HTTP503SERVICEUNAVAILABLE,
-					$$$EnsErrBusinessDispatchNameNotRegistered:	..#HTTP502BADGATEWAY,
+					$$$LoadObjectNotFound:						..#NOTFOUND,
+					$$$HSFHIRErrEntityNotFound:					..#NOTFOUND,
+					$$$HSFHIRErrUrlNotMatchedToInteraction:		..#NOTFOUND,
+					$$$HSFHIRErrPayloadMissing:					..#BADREQUEST,
+					$$$HSFHIRErrPayloadUnexpected:				..#BADREQUEST,
+					$$$HSFHIRErrContentTypeNotSupported:		..#NOTACCEPTABLE,
+					$$$EnsErrProductionNotRunning:				..#SERVICEUNAVAILABLE,
+					$$$EnsErrBusinessDispatchNameNotRegistered:	..#BADGATEWAY,
 					:"")
 								
 			If tMatch'="" {
@@ -75,5 +82,29 @@ ClassMethod StatusToHttp(pStatus As %Status, ByRef pHttpStatus As %String = "") 
     Quit tStatus
 }
 
+/// An utility method to unmarshall json payload from HIP.Message.HIPRESTRequest to corresponding resource instance
+/// type: the full resource class name, i.e. "ODS.Patient"
+ClassMethod GetResourceFromRESTReq(pRequest As HIP.Message.HIPRESTRequest, ByRef resInstance As ODS.DT.AbstractResource, type As %String) As %Status
+{
+	Set tSC = $$$OK
+	Set tSC = ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(pRequest.Payload, type,.resInstance)
+	quit tSC
+}
+
+///Make a response message with Dependent Resource missing Error
+ClassMethod GetResMissingResp(resourceName as %String, dependentResName As %String) As HIP.Message.HIPRESTResponse{
+	#dim resp As HIP.Message.HIPRESTResponse = ##class(HIP.Message.HIPRESTResponse).%New()
+	set resp.Code = ..#BADREQUEST
+	set resp.Message = resourceName _" dependent Resource " _ dependentResName _" doest not exist in request"
+	quit resp
+}
+
+///Make a response message with Resource not Existence Error
+ClassMethod GetResNotExistResp(resourceName as %String, dependentResName As %String, dependentResId As %String) As HIP.Message.HIPRESTResponse{
+	#dim resp As HIP.Message.HIPRESTResponse = ##class(HIP.Message.HIPRESTResponse).%New()
+	set resp.Code = ..#NOTACCEPTABLE
+	set resp.Message = resourceName _" dependent Resource " _ dependentResName _" with ResourceId:"_dependentResId_" doest not exist"
+	quit resp
+}
 
 }
