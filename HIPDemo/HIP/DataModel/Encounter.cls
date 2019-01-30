@@ -9,9 +9,7 @@ Parameter XMLSEQUENCE = 1;
 Parameter XMLTYPE = "HIP.DataModel.Encounter";
 
 /// The patient ro group present at the encounter.
-Property Subject As HIP.DataModel.Patient(XMLNAME = "subject", XMLPROJECTION = "ELEMENT") [required];
-
-
+Property Subject As HIP.DataModel.Patient(XMLNAME = "subject", XMLPROJECTION = "ELEMENT") [ Required ];
 
 Storage Default
 {

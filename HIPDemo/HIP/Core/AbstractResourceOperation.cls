@@ -26,16 +26,17 @@ Method OnRequest(pRequest As HIP.Message.HIPRESTRequest, Output pResponse As HIP
 	}
 	//Invoke handlers to perform
 	set tSC = $CASE(pRequest.Operation,
-		"Create":..OnCreate(tInstance,.pResponse),
+		"Create":..OnCreate(tInstance,.pResponse,pRequest),
 		"Delete":..OnDelete(pRequest,.pResponse),
-		"Update":..OnUpdate(tInstance,.pResponse),
+		"Update":..OnUpdate(tInstance,.pResponse,pRequest),
 		"Search":..OnSearch(pRequest,.pResponse),
-		"Read":..OnRead(pRequest,.pResponse)) 
+		"Read":..OnRead(pRequest,.pResponse))
+		
 	Quit tSC
 }
 
 
-Method OnCreate(pInstance As %Persistent, ByRef pResponse As HIP.Message.HIPRESTResponse) As %Status{
+Method OnCreate(pInstance As %Persistent, ByRef pResponse As HIP.Message.HIPRESTResponse, pRequest As HIP.Message.HIPRESTRequest) As %Status{
 	Set tSC = $$$OK
 	try{
 		$$$TOE(tSC,pInstance.%Save())
@@ -55,7 +56,7 @@ Method OnDelete(pRequest As HIP.Message.HIPRESTRequest, ByRef pResponse As HIP.M
 	quit tSC
 }
 
-Method OnUpdate(pInstance As %Persistent, ByRef pResponse As HIP.Message.HIPRESTResponse) As %Status{
+Method OnUpdate(pInstance As %Persistent, ByRef pResponse As HIP.Message.HIPRESTResponse, pRequest As HIP.Message.HIPRESTRequest) As %Status{
 	set tSC = pInstance.%Save()
 	quit tSC
 }
@@ -87,7 +88,7 @@ Method OnUnmarshallError(status As %Status) As HIP.Message.HIPRESTResponse{
 	quit resp
 }
 
-Method OnSaveResponse(status As %Status,instance As ODS.DT.AbstractResource) As HIP.Message.HIPRESTResponse{
+Method OnSaveResponse(status As %Status,instance As ODS.DT.AbstractResource, className As %String) As HIP.Message.HIPRESTResponse{
 	#dim resp As HIP.Message.HIPRESTResponse = ##class(HIP.Message.HIPRESTResponse).%New()
 	if $$$ISERR(status){
 		set resp.Code = ##class(HIP.Core.Utils).#NOTACCEPTABLE
@@ -99,8 +100,12 @@ Method OnSaveResponse(status As %Status,instance As ODS.DT.AbstractResource) As 
 		quit:$$$ISERR(tSC)
 	}else{
 		set resp.Code = ##class(HIP.Core.Utils).#OK
-		set resp.Type = instance.%ClassName(0)
-		set resp.Message= instance.%ClassName(0)_" Successfully saved into ODS."
+		if ("" = className) {
+			set resp.Type = instance.%ClassName(0)
+		}else{
+			set resp.Type = className
+		}
+		set resp.Message= resp.Type_" Successfully saved into ODS."
 		set tStream = ""
 		do ##class(%ZEN.Auxiliary.jsonProvider).%WriteJSONStreamFromObject(.tStream,instance,,,,"s")
 		Set tSC = resp.Payload.CopyFrom(tStream)

@@ -7,7 +7,7 @@ Parameter RESPONSECLASSNAME As %String = "HIP.Message.HIPRESTResponse";
 Property Type As %String(MAXLEN = 128) [ Required ];
 
 /// The operation need to be performed, namely create,delete,update,search and read
-Property Operation As %String(MAXLEN = 16, VALUELIST = ",Create,Delete,Update,Search,Read") [ Required ];
+Property Operation As %String(MAXLEN = 16, VALUELIST = ",Create,Delete,Update,Search,Read,BatchCreate") [ Required ];
 
 /// Query Parameters
 Property Parameters As array Of %List;
