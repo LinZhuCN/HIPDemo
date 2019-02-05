@@ -88,11 +88,15 @@ Method OnUnmarshallError(status As %Status) As HIP.Message.HIPRESTResponse{
 	quit resp
 }
 
-Method OnSaveResponse(status As %Status,instance As ODS.DT.AbstractResource, className As %String) As HIP.Message.HIPRESTResponse{
+Method OnSaveResponse(status As %Status,instance As ODS.DT.AbstractResource, className As %String = "") As HIP.Message.HIPRESTResponse{
 	#dim resp As HIP.Message.HIPRESTResponse = ##class(HIP.Message.HIPRESTResponse).%New()
 	if $$$ISERR(status){
 		set resp.Code = ##class(HIP.Core.Utils).#NOTACCEPTABLE
-		set resp.Type = instance.%ClassName(0)
+		if ("" = className) {
+			set resp.Type = instance.%ClassName(0)
+		}else{
+			set resp.Type = className
+		}
 		set resp.Message = $System.Status.GetOneStatusText(status,1)
 		set tStream = ""
 		do ##class(%ZEN.Auxiliary.jsonProvider).%WriteJSONStreamFromObject(.tStream,instance,,,,"s")
@@ -130,7 +134,7 @@ Method OnReadResponse(status As %Status,instance As ODS.DT.AbstractResource, pRe
 			set resp.Type = instance.%ClassName(0)
 			set resp.Message= instance.%ClassName(0)_ " found in ODS."
 			set tStream = ""
-			do ##class(%ZEN.Auxiliary.jsonProvider).%WriteJSONStreamFromObject(.tStream,instance,,,,"s")
+			do ##class(%ZEN.Auxiliary.jsonProvider).%WriteJSONStreamFromObject(.tStream,instance,,,,"as")
 			Set tSC = resp.Payload.CopyFrom(tStream)
 			quit:$$$ISERR(tSC)
 		}else{

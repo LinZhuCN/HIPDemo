@@ -8,8 +8,6 @@ Parameter XMLSEQUENCE = 1;
 
 Parameter XMLTYPE = "HIP.DataModel.Patient";
 
-// Index ResourceIdIdx On ResourceId [ Unique ];
-
 /// 就诊
 Property Encounters As list Of HIP.DataModel.Encounter(XMLNAME = "Encounters", XMLPROJECTION = "ELEMENT");
 

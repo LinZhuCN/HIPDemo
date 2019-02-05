@@ -1,12 +1,13 @@
-Class HIP.Operation.Resource.EncounterOperation extends HIP.Core.AbstractResourceOperation{
-	
+Class HIP.Operation.Resource.EncounterOperation Extends HIP.Core.AbstractResourceOperation
+{
+
 /// Must be overriden by sub class to record the resource name. I.e. "ODS.Patient"
 Parameter RESOURCENAME = "HIP.DataModel.Encounter";
 
 Parameter INVOCATION = "Queue";
-	
 
-Method OnCreate(pInstance As %Persistent, ByRef pResponse As HIP.Message.HIPRESTResponse, pRequest As HIP.Message.HIPRESTRequest) As %Status{
+Method OnCreate(pInstance As %Persistent, ByRef pResponse As HIP.Message.HIPRESTResponse, pRequest As HIP.Message.HIPRESTRequest) As %Status
+{
 	Set tSC = $$$OK
 	#dim pInstance As HIP.DataModel.Encounter
 	Set pId = pInstance.Subject.ResourceId
@@ -14,7 +15,9 @@ Method OnCreate(pInstance As %Persistent, ByRef pResponse As HIP.Message.HIPREST
 	try{
 		Set patInstance = ##class(HIP.DataModel.Patient).%OpenId(pId)
 		Set pInstance.Subject = patInstance
-		do patInstance.Encounters.Insert(pInstance)
+		if ($ISOBJECT(patInstance) && ("" '= patInstance)) {
+			do patInstance.Encounters.Insert(pInstance)
+		}
 		Set tSC = ##super(pInstance,.pResponse)
 	}catch (unexpected){
 		Set pResponse = ..OnSaveResponse(unexpected.AsStatus(),pRequest)
@@ -22,6 +25,5 @@ Method OnCreate(pInstance As %Persistent, ByRef pResponse As HIP.Message.HIPREST
 	}
 	Quit tSC
 }
-
 
 }

@@ -18,6 +18,18 @@ XData RuleDefinition [ XMLNamespace = "http://www.intersystems.com/rule" ]
 <send transform="" target="HIP.Process.ResourceBPL.EncounterBPL"></send>
 <return></return>
 </when>
+<when condition="Document.Type=&quot;BatchServiceRequest&quot;">
+<send transform="" target="HIP.Process.ResourceBPL.BatchServiceRequestBPL"></send>
+<return></return>
+</when>
+<when condition="Document.Type=&quot;Diagnosis&quot;">
+<send transform="" target="HIP.Process.ResourceBPL.DiagnosisBPL"></send>
+<return></return>
+</when>
+<when condition="Document.Type=&quot;BatchObservation&quot;">
+<send transform="" target="HIP.Process.ResourceBPL.BatchObservationBPL"></send>
+<return></return>
+</when>
 </rule>
 </ruleSet>
 </ruleDefinition>
