@@ -1,6 +1,7 @@
 Class HIP.Operation.Resource.BatchObservationOperation Extends HIP.Core.AbstractResourceOperation
 {
-	/// Must be overriden by sub class to record the resource name. I.e. "ODS.Patient"
+
+/// Must be overriden by sub class to record the resource name. I.e. "ODS.Patient"
 /// Be aware that BatchServiceRequest is not aimed to be saved directly into ODS
 /// It is used to support batch save of Service Request
 Parameter RESOURCENAME = "ODS.BatchObservation";
@@ -27,6 +28,7 @@ Method OnCreate(pInstance As %Persistent, ByRef pResponse As HIP.Message.HIPREST
 				if '$$$ISERR(tSC){
 					Set dataInst.Encounter = entInstance
 					Do entInstance.ServiceRequests.Insert(dataInst)
+					Do entInstance.Observations.Insert(dataInst)
 					Do saveList.Insert(dataInst)
 				}else{
 					Set pResponse = ..OnSaveResponse(tSC,odsInst,..#RESOURCENAME)

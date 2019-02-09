@@ -1,10 +1,15 @@
-Class HIP.Core.AbstractResourceOperation Extends Ens.BusinessOperation [ Abstract,NOEXTENT ]
+Class HIP.Core.AbstractResourceOperation Extends Ens.BusinessOperation [ Abstract, NoExtent ]
 {
 
 Parameter INVOCATION = "Queue";
 
 /// Must be overriden by sub class to record the resource name. I.e. "ODS.Patient"
-Parameter RESOURCENAME AS %STRING;
+Parameter RESOURCENAME As %STRING;
+
+/// To define which service host to handle topic generation
+Property TopicHandlerName;
+
+Parameter SETTINGS = "TopicHandlerName:Connection:selector?context={Ens.ContextSearch/ProductionItems?targets=1&productionName=@productionId}";
 
 XData MessageMap
 {
@@ -14,7 +19,6 @@ XData MessageMap
 	</MapItem>
 </MapItems>
 }
-
 
 Method OnRequest(pRequest As HIP.Message.HIPRESTRequest, Output pResponse As HIP.Message.HIPRESTResponse) As %Status
 {
@@ -35,8 +39,8 @@ Method OnRequest(pRequest As HIP.Message.HIPRESTRequest, Output pResponse As HIP
 	Quit tSC
 }
 
-
-Method OnCreate(pInstance As %Persistent, ByRef pResponse As HIP.Message.HIPRESTResponse, pRequest As HIP.Message.HIPRESTRequest) As %Status{
+Method OnCreate(pInstance As %Persistent, ByRef pResponse As HIP.Message.HIPRESTResponse, pRequest As HIP.Message.HIPRESTRequest) As %Status
+{
 	Set tSC = $$$OK
 	try{
 		$$$TOE(tSC,pInstance.%Save())
@@ -48,24 +52,26 @@ Method OnCreate(pInstance As %Persistent, ByRef pResponse As HIP.Message.HIPREST
 	quit tSC
 }
 
-
-
-Method OnDelete(pRequest As HIP.Message.HIPRESTRequest, ByRef pResponse As HIP.Message.HIPRESTResponse) As %Status{
+Method OnDelete(pRequest As HIP.Message.HIPRESTRequest, ByRef pResponse As HIP.Message.HIPRESTResponse) As %Status
+{
 	set instId = pRequest.Id
 	set tSC = $CLASSMETHOD(..#RESOURCENAME,"%DeleteId",instId)
 	quit tSC
 }
 
-Method OnUpdate(pInstance As %Persistent, ByRef pResponse As HIP.Message.HIPRESTResponse, pRequest As HIP.Message.HIPRESTRequest) As %Status{
+Method OnUpdate(pInstance As %Persistent, ByRef pResponse As HIP.Message.HIPRESTResponse, pRequest As HIP.Message.HIPRESTRequest) As %Status
+{
 	set tSC = pInstance.%Save()
 	quit tSC
 }
 
-Method OnSearch(pRequest As HIP.Message.HIPRESTRequest, ByRef pResponse As HIP.Message.HIPRESTResponse) As %Status{
+Method OnSearch(pRequest As HIP.Message.HIPRESTRequest, ByRef pResponse As HIP.Message.HIPRESTResponse) As %Status
+{
 	Quit $$$ERROR($$$NotImplemented)
 }
 
-Method OnRead(pRequest As HIP.Message.HIPRESTRequest, ByRef pResponse As HIP.Message.HIPRESTResponse) As %Status{
+Method OnRead(pRequest As HIP.Message.HIPRESTRequest, ByRef pResponse As HIP.Message.HIPRESTResponse) As %Status
+{
 	set tSC = $$$OK
 	try{
 		set instId = pRequest.Id
@@ -79,7 +85,8 @@ Method OnRead(pRequest As HIP.Message.HIPRESTRequest, ByRef pResponse As HIP.Mes
 	quit tSC
 }
 
-Method OnUnmarshallError(status As %Status) As HIP.Message.HIPRESTResponse{
+Method OnUnmarshallError(status As %Status) As HIP.Message.HIPRESTResponse
+{
 	#dim resp As HIP.Message.HIPRESTResponse = ##class(HIP.Message.HIPRESTResponse).%New()
 	set resp.Code = ##class(HIP.Core.Utils).#BADREQUEST
 	set resp.Event= ""
@@ -88,7 +95,8 @@ Method OnUnmarshallError(status As %Status) As HIP.Message.HIPRESTResponse{
 	quit resp
 }
 
-Method OnSaveResponse(status As %Status,instance As ODS.DT.AbstractResource, className As %String = "") As HIP.Message.HIPRESTResponse{
+Method OnSaveResponse(status As %Status, instance As ODS.DT.AbstractResource, className As %String = "") As HIP.Message.HIPRESTResponse
+{
 	#dim resp As HIP.Message.HIPRESTResponse = ##class(HIP.Message.HIPRESTResponse).%New()
 	if $$$ISERR(status){
 		set resp.Code = ##class(HIP.Core.Utils).#NOTACCEPTABLE
@@ -118,7 +126,8 @@ Method OnSaveResponse(status As %Status,instance As ODS.DT.AbstractResource, cla
 	quit resp
 }
 
-Method OnReadResponse(status As %Status,instance As ODS.DT.AbstractResource, pRequest As HIP.Message.HIPRESTRequest, resourceType As %String) As HIP.Message.HIPRESTResponse{
+Method OnReadResponse(status As %Status, instance As ODS.DT.AbstractResource, pRequest As HIP.Message.HIPRESTRequest, resourceType As %String) As HIP.Message.HIPRESTResponse
+{
 	#dim resp As HIP.Message.HIPRESTResponse = ##class(HIP.Message.HIPRESTResponse).%New()
 	if $$$ISERR(status){
 		set resp.Code = ##class(HIP.Core.Utils).#BADREQUEST
@@ -134,7 +143,7 @@ Method OnReadResponse(status As %Status,instance As ODS.DT.AbstractResource, pRe
 			set resp.Type = instance.%ClassName(0)
 			set resp.Message= instance.%ClassName(0)_ " found in ODS."
 			set tStream = ""
-			do ##class(%ZEN.Auxiliary.jsonProvider).%WriteJSONStreamFromObject(.tStream,instance,,,,"as")
+			do ##class(%ZEN.Auxiliary.jsonProvider).%WriteJSONStreamFromObject(.tStream,instance,,,,"s")
 			Set tSC = resp.Payload.CopyFrom(tStream)
 			quit:$$$ISERR(tSC)
 		}else{
@@ -165,7 +174,8 @@ ClassMethod GetResourceListFromRESTReq(pRequest As HIP.Message.HIPRESTRequest, B
 /// Get an Object List from a JSON stream
 /// Assuming that all members in the JSON array are of the same type of <var>tierOneClass</var>
 ClassMethod getObjectListFromJSONArray(inStream As %Stream.Object, tierOneClass As %String, ByRef list As %ListOfObjects) As %Status
-{	
+{
+	
 	Set tSC = $$$OK
 	Set objList = ##class(%DynamicObject).%FromJSON(inStream.Read())
 	//If the stream does not contain a JSON list, quit as an empty string

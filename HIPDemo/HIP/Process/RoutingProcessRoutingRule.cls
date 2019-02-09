@@ -30,6 +30,10 @@ XData RuleDefinition [ XMLNamespace = "http://www.intersystems.com/rule" ]
 <send transform="" target="HIP.Process.ResourceBPL.BatchObservationBPL"></send>
 <return></return>
 </when>
+<when condition="Document.Type=&quot;ServiceRequest&quot;">
+<send transform="" target="HIP.Process.ResourceBPL.ServiceRequestBPL"></send>
+<return></return>
+</when>
 </rule>
 </ruleSet>
 </ruleDefinition>

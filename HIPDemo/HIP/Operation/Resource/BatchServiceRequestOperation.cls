@@ -52,6 +52,17 @@ Method OnCreate(pInstance As %Persistent, ByRef pResponse As HIP.Message.HIPREST
 				Set pResponse = ..OnSaveResponse(tSC,inst,"HIP.DataModel.ServiceRequest")
 				Set tSC = $$$OK
 				RETURN tSC
+			}else{
+				set topicHandler = ..TopicHandlerName
+				if ("" '= topicHandler) {
+					//Set odsInstance = ""
+					//Set tSC2 = ..GetODSFromDataModel(inst,.odsInstance)
+					#Dim eventMsg As HIP.Message.Events.HIPResourceEventMsg = ##class(HIP.Message.Events.HIPResourceEventMsg).%New()
+					Set eventMsg.Type = "ODS.ServiceRequest"
+					Set eventMsg.Event = "Created"
+					Set eventMsg.ResourceId = inst.ResourceId
+					Set tSC2 = ..SendRequestAsync(..TopicHandlerName,eventMsg)
+				}
 			}
 		}
 		///TCOMMIT
@@ -72,6 +83,17 @@ Method GetDataModelFromODS(odsInst As ODS.ServiceRequest, ByRef dataInst As HIP.
 	Quit:$$$ISERR(tSC)
 	set dataInst = ##class(HIP.DataModel.ServiceRequest).%New()
 	Set tSC = ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(tStream,"HIP.DataModel.ServiceRequest",.dataInst,1)
+	Quit tSC
+}
+
+Method GetODSFromDataModel(dataInst As HIP.DataModel.ServiceRequest, ByRef odsInst As ODS.ServiceRequest) As %Status
+{
+	Set tSC = $$$OK
+	Set tStream = ""
+	Set tSC = ##class(%ZEN.Auxiliary.jsonProvider).%WriteJSONStreamFromObject(.tStream,dataInst,,,,"s")
+	Quit:$$$ISERR(tSC)
+	set odsInst = ##class(ODS.ServiceRequest).%New()
+	Set tSC = ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(tStream,"ODS.ServiceRequest",.odsInst,1)
 	Quit tSC
 }
 
