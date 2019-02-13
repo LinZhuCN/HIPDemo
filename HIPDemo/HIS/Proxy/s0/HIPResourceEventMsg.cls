@@ -12,6 +12,8 @@ Property Type As %String(MAXLEN = 128, XMLNAME = "Type") [ Required ];
 
 Property Event As %String(MAXLEN = 16, VALUELIST = ",Created,Deleted,Updated", XMLNAME = "Event") [ Required ];
 
+Property Status As %String(XMLNAME = "Status");
+
 Property ResourceId As %String(XMLNAME = "ResourceId") [ Required ];
 
 Property PreVersion As %Stream.GlobalCharacter(XMLNAME = "PreVersion");
@@ -27,15 +29,12 @@ Storage Default
 <Value>Event</Value>
 </Value>
 <Value name="3">
-<Value>Instance</Value>
+<Value>Status</Value>
 </Value>
 <Value name="4">
-<Value>preVerrsion</Value>
-</Value>
-<Value name="5">
 <Value>ResourceId</Value>
 </Value>
-<Value name="6">
+<Value name="5">
 <Value>PreVersion</Value>
 </Value>
 </Data>

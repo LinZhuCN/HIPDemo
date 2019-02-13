@@ -15,6 +15,19 @@ Property Subject As HIP.DataModel.Patient(XMLNAME = "subject", XMLPROJECTION = "
 /// 就诊
 Property Encounter As HIP.DataModel.Encounter(XMLNAME = "encounter", XMLPROJECTION = "ELEMENT");
 
+/// Assigns a persistent object Id value for this object. 
+/// This method fails if the object already has an Id value assigned to it.
+/// <p>Returns a <CLASS>%Status</CLASS> value indicating success or failure.
+Method SetId(id As %String) As %Status
+{
+ 	Set class=$classname(),class=$$$DenormalizeClassname(class),oid=$$$oidCompose(id,class)
+	#; Check for previously assigned OID
+	If i%"%%OID"'="",i%"%%OID"'=oid Quit $$$ERROR($$$OidPreviouslyAssigned,$classname(),id)
+	#; store oid and allow lookup based on oid
+	Set i%"%%OID"=oid $$$ActiveOidInsert(oid,$this)
+	Quit $$$OK
+}
+
 Storage Default
 {
 <Data name="ServiceRequestDefaultData">

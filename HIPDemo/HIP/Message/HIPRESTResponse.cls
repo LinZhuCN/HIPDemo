@@ -5,9 +5,14 @@ Property Code As %String(MAXLEN = 8);
 
 Property Event As %String(MAXLEN = 16);
 
+Property ResourceId As %String;
+
 Property Type As %String;
 
 Property Message As %String(MAXLEN = 4096);
+
+	/// Current Status of the instance, to be used as a shotcut for event handling
+Property Status As %String;
 
 Property Payload As %Stream.GlobalCharacter;
 
@@ -38,6 +43,12 @@ Storage Default
 </Value>
 <Value name="8">
 <Value>Message</Value>
+</Value>
+<Value name="9">
+<Value>ResourceId</Value>
+</Value>
+<Value name="10">
+<Value>Status</Value>
 </Value>
 </Data>
 <DefaultData>HIPRESTResponseDefaultData</DefaultData>

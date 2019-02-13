@@ -44,7 +44,7 @@ Method OnCreate(pInstance As %Persistent, ByRef pResponse As HIP.Message.HIPREST
 	Set tSC = $$$OK
 	try{
 		$$$TOE(tSC,pInstance.%Save())
-		Set pResponse = ..OnSaveResponse(tSC,pInstance)
+		Set pResponse = ..OnSaveResponse(tSC,pInstance,,pInstance.%Id())
 	}catch unexpected{
 		Set pResponse = ..OnSaveResponse(unexpected.AsStatus(),pInstance)
 		Set tSC = $$$OK
@@ -95,7 +95,7 @@ Method OnUnmarshallError(status As %Status) As HIP.Message.HIPRESTResponse
 	quit resp
 }
 
-Method OnSaveResponse(status As %Status, instance As ODS.DT.AbstractResource, className As %String = "") As HIP.Message.HIPRESTResponse
+Method OnSaveResponse(status As %Status, instance As ODS.DT.AbstractResource, className As %String = "",resId As %String) As HIP.Message.HIPRESTResponse
 {
 	#dim resp As HIP.Message.HIPRESTResponse = ##class(HIP.Message.HIPRESTResponse).%New()
 	if $$$ISERR(status){
@@ -117,6 +117,7 @@ Method OnSaveResponse(status As %Status, instance As ODS.DT.AbstractResource, cl
 		}else{
 			set resp.Type = className
 		}
+		Set resp.ResourceId = resId
 		set resp.Message= resp.Type_" Successfully saved into ODS."
 		set tStream = ""
 		do ##class(%ZEN.Auxiliary.jsonProvider).%WriteJSONStreamFromObject(.tStream,instance,,,,"s")
@@ -140,6 +141,7 @@ Method OnReadResponse(status As %Status, instance As ODS.DT.AbstractResource, pR
 	}else{
 		if (($data(instance)) && ("" '= instance)){
 			set resp.Code = ##class(HIP.Core.Utils).#OK
+			set resp.ResourceId = instance.ResourceId
 			set resp.Type = instance.%ClassName(0)
 			set resp.Message= instance.%ClassName(0)_ " found in ODS."
 			set tStream = ""

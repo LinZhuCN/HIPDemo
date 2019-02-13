@@ -34,10 +34,10 @@ XData BPL [ XMLNamespace = "http://www.intersystems.com/bpl" ]
 <switch name='As Resource' xpos='200' ypos='350' xend='200' yend='600' >
 <case condition='"ODS.ServiceRequest" = request.Type' name='IsServiceRequest' >
 <sequence name='GetSubscribersForServiceRequest' xpos='335' ypos='500' xend='200' yend='800' >
-<assign name="Set Event" property="context.Topic" value="context.Topic_&quot;.&quot;_request.Event" action="set" xpos='200' ypos='250' />
+<assign name="Set Service Request Event" property="context.Topic" value="context.Topic_&quot;.&quot;_request.Event" action="set" xpos='200' ypos='250' />
 <if name='IsUpdate?' condition='"Updated" = request.Event' xpos='200' ypos='350' xend='200' yend='600' >
 <true>
-<trace name='update' value='"TO Be implemented"' xpos='335' ypos='500' />
+<assign name="Set Service Request Update Status" property="context.Topic" value="context.Topic_&quot;.&quot;_request.Status" action="set" xpos='335' ypos='500' />
 </true>
 </if>
 <call name='Find Subsribers' target='EnsLib.PubSub.PubSubOperation' async='0' xpos='200' ypos='700' >
@@ -61,6 +61,7 @@ XData BPL [ XMLNamespace = "http://www.intersystems.com/bpl" ]
 <assign property="callrequest.pRequest.Type" value="request.Type" action="set" />
 <assign property="callrequest.pRequest.ResourceId" value="request.ResourceId" action="set" />
 <assign property="callrequest.pRequest.PreVersion" value="request.PreVersion" action="set" />
+<assign property="callrequest.pRequest.Status" value="request.Status" action="set" />
 </request>
 <response type='Ens.Response' />
 </call>

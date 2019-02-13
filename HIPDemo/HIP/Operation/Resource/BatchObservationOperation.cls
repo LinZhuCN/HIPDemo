@@ -38,9 +38,11 @@ Method OnCreate(pInstance As %Persistent, ByRef pResponse As HIP.Message.HIPREST
 			}
 		}
 		///TSTART
+		Set resId = ""
 		for i=1:1:(saveList.Count()){
 			set inst = saveList.GetAt(i)
 			Set tSC = inst.%Save()
+			Set resId = resId _inst.ResourceId_","
 			If $$$ISERR(tSC){
 				///TROLLBACK
 				Set pResponse = ..OnSaveResponse(tSC,inst,"HIP.DataModel.Observation")
@@ -49,7 +51,7 @@ Method OnCreate(pInstance As %Persistent, ByRef pResponse As HIP.Message.HIPREST
 			}
 		}
 		///TCOMMIT
-		Set pResponse = ..OnSaveResponse(tSC,saveList,..#RESOURCENAME)
+		Set pResponse = ..OnSaveResponse(tSC,saveList,..#RESOURCENAME,resId)
 	}catch (unexpected){
 		///TROLLBACK
 		Set pResponse = ..OnSaveResponse(unexpected.AsStatus(),pInstance,..#RESOURCENAME)

@@ -44,29 +44,89 @@ Method OnCreate(pInstance As %Persistent, ByRef pResponse As HIP.Message.HIPREST
 			}
 		}
 		///TSTART
+		Set resId = ""
+		Set instStatus = ""
 		for i=1:1:(saveList.Count()){
-			set inst = saveList.GetAt(i)
+			Set inst = saveList.GetAt(i)
 			Set tSC = inst.%Save()
+			Set resId = resId _inst.ResourceId_","
+			Set instStatus = inst.Status.Code
 			If $$$ISERR(tSC){
 				///TROLLBACK
 				Set pResponse = ..OnSaveResponse(tSC,inst,"HIP.DataModel.ServiceRequest")
 				Set tSC = $$$OK
 				RETURN tSC
-			}else{
-				set topicHandler = ..TopicHandlerName
-				if ("" '= topicHandler) {
-					//Set odsInstance = ""
-					//Set tSC2 = ..GetODSFromDataModel(inst,.odsInstance)
-					#Dim eventMsg As HIP.Message.Events.HIPResourceEventMsg = ##class(HIP.Message.Events.HIPResourceEventMsg).%New()
-					Set eventMsg.Type = "ODS.ServiceRequest"
-					Set eventMsg.Event = "Created"
-					Set eventMsg.ResourceId = inst.ResourceId
-					Set tSC2 = ..SendRequestAsync(..TopicHandlerName,eventMsg)
-				}
 			}
 		}
 		///TCOMMIT
-		Set pResponse = ..OnSaveResponse(tSC,saveList,..#RESOURCENAME)
+		Set pResponse = ..OnSaveResponse(tSC,saveList,..#RESOURCENAME,resId)
+		Set pResponse.Status = instStatus
+	}catch (unexpected){
+		///TROLLBACK
+		Set pResponse = ..OnSaveResponse(unexpected.AsStatus(),pInstance,..#RESOURCENAME)
+		Set tSC = $$$OK
+	}
+	Quit tSC
+}
+
+
+Method OnUpdate(pInstance As %Persistent, ByRef pResponse As HIP.Message.HIPRESTResponse, pRequest As HIP.Message.HIPRESTRequest) As %Status
+{
+	Set tSC = $$$OK
+	try{
+		Set pId = pInstance.Patient.ResourceId
+		Set eId = pInstance.Encounter.ResourceId
+		#Dim patInstance As HIP.DataModel.Patient = ##class(HIP.DataModel.Patient).%OpenId(pId)
+		If ('$IsObject(patInstance) || ("" = patInstance)){
+			 set pResponse = ##class(HIP.Core.Utils).GetResNotExistResp("HIP.DataModel.ServiceRequest","HIP.DataModel.Patient",pId)
+			 Return $$$OK
+		}
+		#Dim entInstance As HIP.DataModel.Encounter = ##class(HIP.DataModel.Encounter).%OpenId(eId)
+		If ('$IsObject(entInstance) || ("" = entInstance)){
+			 set pResponse = ##class(HIP.Core.Utils).GetResNotExistResp("HIP.DataModel.ServiceRequest","HIP.DataModel.Encounter",eId)
+			 Return $$$OK
+		}
+		Set count = pInstance.ServiceRequests.Size
+		Set saveList = ##class(%ListOfObjects).%New()
+		For idx=1:1:count {
+			set odsInst = pInstance.ServiceRequests.GetAt(idx)
+			#Dim dataInst As HIP.DataModel.ServiceRequest = ""
+			if ($IsObject(odsInst) && ("" '= odsInst)){
+				Set tSC = ..GetDataModelFromODS(odsInst,.dataInst)
+				if '$$$ISERR(tSC){
+					#dim oriInst As HIP.DataModel.ServiceRequest = ##class(HIP.DataModel.ServiceRequest).%OpenId(dataInst.ResourceId)
+					//Do ..CopyProperties(dataInst,.oriInst) 
+					//Do dataInst.%IdSet(oriInst.%Id())
+					Do dataInst.SetId(oriInst.%Id())
+					Set dataInst.Subject = patInstance
+					Set dataInst.Encounter = entInstance
+					Do entInstance.ServiceRequests.Insert(dataInst)
+					Do saveList.Insert(dataInst)
+				}else{
+					Set pResponse = ..OnSaveResponse(tSC,odsInst,..#RESOURCENAME)
+					Set tSC = $$$OK
+					RETURN tSC
+				}
+			}
+		}
+		///TSTART
+		Set resId = ""
+		Set instStatus = ""
+		for i=1:1:(saveList.Count()){
+			#dim inst As HIP.DataModel.ServiceRequest = saveList.GetAt(i)
+			Set tSC = inst.%Save()
+			Set resId = resId _inst.ResourceId_","
+			Set instStatus = inst.Status.Code
+			If $$$ISERR(tSC){
+				///TROLLBACK
+				Set pResponse = ..OnSaveResponse(tSC,inst,"HIP.DataModel.ServiceRequest")
+				Set tSC = $$$OK
+				RETURN tSC
+			}
+		}
+		///TCOMMIT
+		Set pResponse = ..OnSaveResponse(tSC,saveList,..#RESOURCENAME,resId)
+		Set pResponse.Status = instStatus
 	}catch (unexpected){
 		///TROLLBACK
 		Set pResponse = ..OnSaveResponse(unexpected.AsStatus(),pInstance,..#RESOURCENAME)
@@ -96,5 +156,6 @@ Method GetODSFromDataModel(dataInst As HIP.DataModel.ServiceRequest, ByRef odsIn
 	Set tSC = ##class(%ZEN.Auxiliary.jsonProvider).%ConvertJSONToObject(tStream,"ODS.ServiceRequest",.odsInst,1)
 	Quit tSC
 }
+
 
 }

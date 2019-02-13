@@ -26,8 +26,6 @@ XData ProductionDefinition
   <Item Name="HIP.Operation.Resource.BatchServiceRequestOperation" Category="" ClassName="HIP.Operation.Resource.BatchServiceRequestOperation" PoolSize="1" Enabled="true" Foreground="false" Comment="" LogTraceEvents="false" Schedule="">
     <Setting Target="Host" Name="TopicHandlerName">HIP.Process.EventEngine.EventHandlerBPL</Setting>
   </Item>
-  <Item Name="HIP.Process.ResourceBPL.BatchServiceRequestBPL" Category="" ClassName="HIP.Process.ResourceBPL.BatchServiceRequestBPL" PoolSize="1" Enabled="true" Foreground="false" Comment="" LogTraceEvents="false" Schedule="">
-  </Item>
   <Item Name="HIP.Operation.Resource.DiagnosisOperation" Category="" ClassName="HIP.Operation.Resource.DiagnosisOperation" PoolSize="1" Enabled="true" Foreground="false" Comment="" LogTraceEvents="false" Schedule="">
   </Item>
   <Item Name="HIP.Process.ResourceBPL.DiagnosisBPL" Category="" ClassName="HIP.Process.ResourceBPL.DiagnosisBPL" PoolSize="1" Enabled="true" Foreground="false" Comment="" LogTraceEvents="false" Schedule="">
@@ -46,6 +44,8 @@ XData ProductionDefinition
   <Item Name="HIP.Operation.Resource.ServiceRequestOperation" Category="" ClassName="HIP.Operation.Resource.ServiceRequestOperation" PoolSize="1" Enabled="true" Foreground="false" Comment="" LogTraceEvents="false" Schedule="">
   </Item>
   <Item Name="HIP.Process.ResourceBPL.ServiceRequestBPL" Category="" ClassName="HIP.Process.ResourceBPL.ServiceRequestBPL" PoolSize="1" Enabled="true" Foreground="false" Comment="" LogTraceEvents="false" Schedule="">
+  </Item>
+  <Item Name="HIP.Process.ResourceBPL.BatchServiceRequestBPL" Category="" ClassName="HIP.Process.ResourceBPL.BatchServiceRequestBPL" PoolSize="1" Enabled="true" Foreground="false" Comment="" LogTraceEvents="false" Schedule="">
   </Item>
 </Production>
 }
